@@ -5,6 +5,7 @@ import numpy as np
 import random
 
 from startingConfiguration import octohedron, icosahedron
+from parametricsurface import surface, sphere
 
 from EnergyCalc.membraneEnergy import energyCalc
 energy1 = energyCalc()
@@ -30,7 +31,7 @@ def MCmove(verts, faces):
 	#accept or reject move (Metropolis)
 	if Enew < Eold:
 		print 'accepted'
-	elif np.exp(-(Enew-Eold)/1.0) > random.uniform(0.0,1.0):
+	elif np.exp(-(Enew-Eold)/2.0) > random.uniform(0.0,1.0):
 		print 'acdepted 2'
 	else:
 		print 'rejected'
@@ -40,7 +41,9 @@ def MCmove(verts, faces):
 		verts[vertex][2] = zi
 
 # create starting configuration
-verts, faces = icosahedron()
+slices, stacks = 32,32
+verts, faces = surface(slices, stacks, sphere)
+#verts, faces = icosahedron()
 
 # store starting config
 x = []
@@ -57,10 +60,10 @@ Ebend = energy1.calcEbend(verts, faces)
 print 'Energy of starting config:', Ebend
 
 # perform MC moves
-for i in range(1000):
+for i in range(50):
 	MCmove(verts, faces)
 	Enew = energy1.calcEbend(verts, faces)
-	print 'Enew', Enew
+	print 'Enew', i, Enew
 
 # for testing
 

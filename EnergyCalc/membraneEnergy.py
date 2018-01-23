@@ -42,24 +42,34 @@ class energyCalc():
 					if faceList[a][b] != vert1 and faceList[a][b] != edgeListIndex:
 						mnlist.append(faceList[a][b])
 
-		m = verts1[mnlist[0]]
-		n = verts1[mnlist[1]]
+		if len(mnlist) < 2:
+			phi = np.pi
+		else:
+			m = verts1[mnlist[0]]
+			n = verts1[mnlist[1]]
 
-		# define remaining two vectors
-		inVec = np.subtract(i,n)
-		imVec = np.subtract(i,m) 
+			# define remaining two vectors
+			inVec = np.subtract(i,n)
+			imVec = np.subtract(i,m) 
 
-		# calculate normal vectors of the two faces
-		n1 = np.cross(imVec, ijVec)
-		norm1 = np.linalg.norm(n1)
-		n1 = n1/norm1
+			# calculate normal vectors of the two faces
+			n1 = np.cross(imVec, ijVec)
+			norm1 = np.linalg.norm(n1)
+			if norm1 <= 0.0000001: 
+				norm1 = 1.0
+			n1 = n1/norm1
 
-		n2 = np.cross(ijVec, inVec)
-		norm2 = np.linalg.norm(n2)
-		n2 = n2/norm2
+			n2 = np.cross(ijVec, inVec)
+			norm2 = np.linalg.norm(n2)
+			if norm2 <= 0.0000002: 		
+				norm2 = 1.0
+			n2 = n2/norm2
 
-		# calculate the angle between the two normal vectors
-		phi = np.arccos( np.dot(n1, n2) )
+			# calculate the angle between the two normal vectors
+			test = np.dot(n1,n2)
+			if test >= 1.0: test = 0.999999999999999999
+
+			phi = np.arccos( test )
 
 		return phi
 	
