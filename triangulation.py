@@ -12,36 +12,37 @@ energy1 = energyCalc()
 
 
 def MCmove(verts, faces):
-	#beforme MC moves to get new configurations
+	#perform MC (Monte Carlo) moves to get new configurations
 	
 	#randomly select vetex:
-	vertex = random.randint(0, len(verts) -1)
-	#Ebend before move:
-	xi = verts[vertex][0]
-	yi = verts[vertex][1]
-	zi = verts[vertex][2]
-	Eold = energy1.calcEbend(verts, faces)
+	#vertex = random.randint(0, len(verts) -1)
 
-	#Displace vertex slightly:
-	verts[vertex][0] += random.uniform(-0.1,0.1)
-	verts[vertex][1] += random.uniform(-0.1,0.1)
-	verts[vertex][2] += random.uniform(-0.1,0.1)
-	Enew = energy1.calcEbend(verts, faces)
+	#try to move each vertex once:
+	for i in range(len(verts)-1):
+		vertex = i
 
-	#accept or reject move (Metropolis)
-	if Enew < Eold:
-		print 'accepted'
-	elif np.exp(-(Enew-Eold)/2.0) > random.uniform(0.0,1.0):
-		print 'acdepted 2'
-	else:
-		print 'rejected'
-		#undo move
-		verts[vertex][0] = xi
-		verts[vertex][1] = yi
-		verts[vertex][2] = zi
+		#Ebend before move:
+		xi = verts[vertex][0]
+		yi = verts[vertex][1]
+		zi = verts[vertex][2]
+		Eold = energy1.calcEbend(verts, faces)
+
+		#Displace vertex slightly:
+		verts[vertex][0] += random.uniform(-0.01,0.01)
+		verts[vertex][1] += random.uniform(-0.01,0.01)
+		verts[vertex][2] += random.uniform(-0.01,0.01)
+		Enew = energy1.calcEbend(verts, faces)
+
+		#accept or reject move (Metropolis Algorithm)
+		kT = 2.0 
+		if np.exp(-(Enew-Eold)/kT) < random.uniform(0.0,1.0):
+			#undo move
+			verts[vertex][0] = xi
+			verts[vertex][1] = yi
+			verts[vertex][2] = zi
 
 # create starting configuration
-slices, stacks = 32,32
+slices, stacks = 16, 16
 verts, faces = surface(slices, stacks, sphere)
 #verts, faces = icosahedron()
 
@@ -59,20 +60,26 @@ Ebend = energy1.calcEbend(verts, faces)
 
 print 'Energy of starting config:', Ebend
 
+# Print Starting Positions to File
+test = open('starting_config.txt','w')  
+for i in range(len(verts)):
+	print>>test, verts[i][0], verts[i][1], verts[i][2]  
+test.close() 
+
 # perform MC moves
-for i in range(50):
+for i in range(10):
 	MCmove(verts, faces)
 	Enew = energy1.calcEbend(verts, faces)
 	print 'Enew', i, Enew
 
-# for testing
 
-# Print Vertex Positions to File
-test = open('testfile.txt','w')  
-for i in range(len(faces)):
-	print>>test, faces[i]  
+# Print Final Positions to File
+test = open('final_config.txt','w')  
+for i in range(len(verts)):
+	print>>test, verts[i][0], verts[i][1], verts[i][2]  
 test.close() 
 
+# for testing
 #Plot Vertex Positions
 
 xf = []
