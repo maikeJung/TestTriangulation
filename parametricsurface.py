@@ -16,8 +16,8 @@ def surface(slices, stacks, func):
 	for i in range(slices):
 		for j in range(stacks):
 			next = (j + 1) % stacks
-			faces.append((v + j, v + next, v + j + stacks))
-			faces.append((v + next, v + next + stacks, v + j + stacks))
+			faces.append([v + j, v + next, v + j + stacks])
+			faces.append([v + next, v + next + stacks, v + j + stacks])
 		v = v + stacks
 
 	return verts, faces

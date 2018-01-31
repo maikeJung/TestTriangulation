@@ -67,7 +67,8 @@ class energyCalc():
 
 			# calculate the angle between the two normal vectors
 			test = np.dot(n1,n2)
-			if test >= 1.0: test = 0.999999999999999999
+			if test >= 1.0: test = 0.99999
+			if test <= -1.0: test = -0.99999
 
 			phi = np.arccos( test )
 
@@ -134,7 +135,10 @@ class energyCalc():
 		for i in range(len(verts)):
 			M = self.calcM(i, faces, verts)
 			A = self.calcA(i, faces, verts)
-			Ebend += M*M/A
+			if A < 0.0000000000001:
+				Ebend += 0.0
+			else: 
+				Ebend += M*M/A
 
 		Ebend *= 2*self.kapa
 
